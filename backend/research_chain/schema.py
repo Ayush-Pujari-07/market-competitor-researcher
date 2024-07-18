@@ -1,13 +1,11 @@
-from typing import List
-
+from typing import List, Optional  # type: ignore
 from pydantic import BaseModel, Field
-from datetime import datetime
 
 
 class ResearchRequest(BaseModel):
-    industry: str | None
-    company: str | None
-    competitors: List[str] | None
+    industry: Optional[str] = None
+    company: Optional[str] = None
+    competitors: Optional[List[str]] = None
     market_research: bool = Field(default=False)
     competitor_research: bool = Field(default=False)
 
@@ -18,3 +16,7 @@ class ResearchReportOut(BaseModel):
     query: str
     report: str
     user_id: str
+
+
+class ResearchReportUpdate(BaseModel):
+    research_report: Optional[str] = None
