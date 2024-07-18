@@ -17,7 +17,5 @@ def navigation():
         set_page('register')
     if st.sidebar.button("Login"):
         set_page('login')
-        # if 'refresh_token' in st.session_state and st.sidebar.button("Research"):
-        #     set_page('research')
-    if st.sidebar.button("Research"):
+    if 'refresh_token' in st.session_state and st.sidebar.button("Research"):
         set_page('research')

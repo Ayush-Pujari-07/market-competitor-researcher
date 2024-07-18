@@ -1,15 +1,30 @@
 import streamlit as st
 import requests
+from http.cookies import SimpleCookie  # type: ignore
 
 CREATE_REPORT_URL = "http://localhost:9000/research/report/create"
 GET_REPORT_URL = "http://localhost:9000/research/get_all"
 
+
 def set_cookie_in_header(refresh_token):
-    from http.cookies import SimpleCookie  # type: ignore
     cookies = SimpleCookie()
     cookies["refreshToken"] = refresh_token
     cookie_header = cookies.output(header="", sep=";").strip()
     return {"Cookie": cookie_header}
+
+
+def fetch_reports(headers):
+    response = requests.get(GET_REPORT_URL, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+
+def create_report(report_request, headers):
+    response = requests.post(
+        CREATE_REPORT_URL, json=report_request, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
 
 def research_report():
     st.title("Your Research Reports")
@@ -22,21 +37,23 @@ def research_report():
     headers = set_cookie_in_header(refresh_token)
 
     try:
-        response = requests.get(GET_REPORT_URL, headers=headers)
-        response.raise_for_status()  # Raise an error for bad status codes
-        reports = response.json()
-        report_titles = [report["query"] for report in reports] if reports else []
+        reports = fetch_reports(headers)
+        report_titles = [report["query"]
+                         for report in reports] if reports else []
 
-        selected_report = st.selectbox("Select a Research Report", [""] + report_titles)
+        selected_report = st.selectbox("Select a Research Report", [
+                                       ""] + report_titles, key="report_select")
 
         if selected_report:
-            report_details = next(report for report in reports if report["query"] == selected_report)
+            report_details = next(
+                report for report in reports if report["query"] == selected_report)
             st.write(report_details['report'])
         else:
             st.title("Start New Research Report")
             industry = st.text_input("Enter the industry")
             company = st.text_input("Enter the company")
-            competitors = st.text_area("Enter competitors (comma-separated)").split(',')
+            competitors = st.text_area(
+                "Enter competitors (comma-separated)").split(',')
             market_research = st.checkbox("Market Research")
             competitor_research = st.checkbox("Competitor Research")
 
@@ -48,17 +65,9 @@ def research_report():
                     "market_research": market_research,
                     "competitor_research": competitor_research
                 }
-                create_report(new_report, headers)
+                created_report = create_report(new_report, headers)
+                st.write(created_report['report']['report'])
+                st.success("Report created successfully!")
 
     except requests.RequestException as e:
-        st.error(f"Failed to fetch reports: {e}")
-
-def create_report(report_request, headers):
-    try:
-        response = requests.post(CREATE_REPORT_URL, json=report_request, headers=headers)
-        response.raise_for_status()
-        report = response.json()
-        st.write(report['report']['report'])
-        st.success("Report created successfully!")
-    except requests.RequestException as e:
-        st.error(f"Failed to create report: {e}")
+        st.error(f"Failed to fetch or create report: {e}")

@@ -17,11 +17,11 @@ def main():
     elif current_page == 'login':
         login_page()
     elif current_page == 'research':
-        # if 'refresh_token' in st.session_state:
+        if 'refresh_token' in st.session_state:
             research_report()
-        # else:
-        #     st.error("Please log in to access the research page.")
-        #     login_page()
+        else:
+            st.error("Please log in to access the research page.")
+            login_page()
     else:
         st.error("Page not found")
 
