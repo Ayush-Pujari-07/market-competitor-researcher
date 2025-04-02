@@ -3,8 +3,6 @@ import json
 import logging
 
 from exa_py import Exa
-from dotenv import load_dotenv, find_dotenv
-
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -13,7 +11,7 @@ from langchain_core.runnables.passthrough import RunnablePassthrough
 
 os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY")
 
-GPT3 = "gpt-3.5-turbo-0125"
+GPT_MINI = "gpt-4o-mini"
 GPT4 = "gpt-4o"
 
 
@@ -99,7 +97,7 @@ scrape_and_summarize_chain = RunnablePassthrough.assign(
         text=lambda x: x["text"][:5000]
     )  # Here also 5000 can be chaneged based on the token input and response generation length
     | SUMMARY_PROMPT
-    | ChatOpenAI(model=GPT3, temperature=1)
+    | ChatOpenAI(model=GPT_MINI, temperature=1)
     | StrOutputParser()
 ) | (lambda x: f"TEXT: {x['text']}\n\nSUMMARY: {x['summary']}")
 
