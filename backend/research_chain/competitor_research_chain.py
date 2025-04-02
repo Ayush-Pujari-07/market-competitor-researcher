@@ -57,7 +57,7 @@ COMPETITOR_ANALYSIS_REPORT_TEMPLATE = """Information:
 Using the above information, write a detailed competitor analysis report on the following question or topic:
 "{question}"
 
--- 
+--
 The report should be:
 
 1. **Well-structured:** Organize the report logically with clear headings and subheadings.
@@ -108,7 +108,8 @@ logger.debug(f"Summary prompt: {SUMMARY_PROMPT}")
 # Updated scrape_and_summarize_chain to handle text directly
 scrape_and_summarize_chain = RunnablePassthrough.assign(
     summary=RunnablePassthrough.assign(
-        text=lambda x: x["text"][:3000])  # Directly use the text from exa
+        text=lambda x: x["text"][:3000]
+    )  # Directly use the text from exa
     | SUMMARY_PROMPT
     | ChatOpenAI(model=GPT3, temperature=1)
     | StrOutputParser()
@@ -134,11 +135,18 @@ SEARCH_PROMPT = ChatPromptTemplate.from_messages(
 )
 
 
-search_question_chain = SEARCH_PROMPT | ChatOpenAI(
-    model=GPT4, temperature=0) | StrOutputParser() | json.loads
+search_question_chain = (
+    SEARCH_PROMPT
+    | ChatOpenAI(model=GPT4, temperature=0)
+    | StrOutputParser()
+    | json.loads
+)
 
-full_research_chain = search_question_chain | (
-    lambda x: [{"question": q} for q in x]) | web_search_chain.map()
+full_research_chain = (
+    search_question_chain
+    | (lambda x: [{"question": q} for q in x])
+    | web_search_chain.map()
+)
 
 logger.debug(f"Full research chain: {full_research_chain}")
 
@@ -167,7 +175,8 @@ def collapse_list_of_lists(list_of_lists):
 
 chain = (
     RunnablePassthrough.assign(
-        research_summary=full_research_chain | collapse_list_of_lists)
+        research_summary=full_research_chain | collapse_list_of_lists
+    )
     | prompt
     | ChatOpenAI(model=GPT4, temperature=0.9)
     | StrOutputParser()

@@ -1,6 +1,7 @@
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 
+
 def get_db(db_name: str):
     MONGO_URI = os.getenv("MONGODB_URI")
     if not MONGO_URI:
@@ -8,4 +9,3 @@ def get_db(db_name: str):
 
     client = AsyncIOMotorClient(MONGO_URI)
     return client[db_name]
-

@@ -19,7 +19,9 @@ try:
     if settings.REDIS_URL:
         REDIS_URL = settings.REDIS_URL
     else:
-        REDIS_URL = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
+        REDIS_URL = (
+            f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DB}"
+        )
         logger.info(f"Using redis url: {REDIS_URL}")
 except Exception as e:
     logger.error(f"Error setting redis url: {e}")
@@ -81,6 +83,7 @@ def setup_langchain():
 async def healthcheck() -> dict[str, str]:
     logger.info("Healthcheck")
     return {"status": "ok"}
+
 
 app.include_router(auth_router, tags=["auth"])
 app.include_router(research_chain_router, tags=["research_chain"])

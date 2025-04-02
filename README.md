@@ -5,7 +5,7 @@ An AI-powered tool that generates comprehensive market research and competitor a
 ## Features
 
 - **Market Research Reports**: Generate detailed market analysis for any industry
-- **Competitor Analysis**: Create in-depth competitor comparison reports 
+- **Competitor Analysis**: Create in-depth competitor comparison reports
 - **User Authentication**: Secure login and registration system
 - **Report Management**: Save, view, and manage your research reports
 - **Modern Tech Stack**: Built with FastAPI, Streamlit, MongoDB, and LangChain

@@ -1,5 +1,13 @@
 import logging
-from fastapi import APIRouter, Depends, Response, status, HTTPException, File, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    Response,
+    status,
+    HTTPException,
+    File,
+    UploadFile,
+)
 
 from backend.auth import jwt, service, utils
 from backend.auth.dependencies import valid_user_create
@@ -16,15 +24,13 @@ async def register_user(
 ) -> UserResponse:
     try:
         user = await service.create_user(auth_data)
-        logger.info(
-            f"User created with ID: {user['_id']}, Email: {user['email']}")
+        logger.info(f"User created with ID: {user['_id']}, Email: {user['email']}")
         return UserResponse(email=user["email"])
     except Exception as e:
-        logger.error(
-            f"Error creating user with username {auth_data.name}: {str(e)}")
+        logger.error(f"Error creating user with username {auth_data.name}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error creating user: {str(e)}"
+            detail=f"Error creating user: {str(e)}",
         )
 
 

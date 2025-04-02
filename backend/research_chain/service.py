@@ -7,8 +7,14 @@ from bson.objectid import ObjectId
 from backend.db import get_db
 from backend.config import settings
 from backend.research_chain.market_research_chain import chain as market_research_chain
-from backend.research_chain.competitor_research_chain import chain as competitor_research_chain
-from backend.research_chain.schema import ResearchRequest, ResearchReportOut, ResearchReportUpdate
+from backend.research_chain.competitor_research_chain import (
+    chain as competitor_research_chain,
+)
+from backend.research_chain.schema import (
+    ResearchRequest,
+    ResearchReportOut,
+    ResearchReportUpdate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +28,9 @@ async def create_report(report: ResearchRequest, user: dict[str, Any]):
             query_type = "competitor_research"
             query = f"Create a compititor research report on {report.company} that operates in the {report.industry} industry and has the following competitors: {report.competitors}"
             logger.info(query)
-            report_res = await competitor_research_chain.ainvoke(input={"question": query})
+            report_res = await competitor_research_chain.ainvoke(
+                input={"question": query}
+            )
             logger.info(report_res)
         else:
             query_type = "market_research"
@@ -31,22 +39,26 @@ async def create_report(report: ResearchRequest, user: dict[str, Any]):
             report_res = await market_research_chain.ainvoke(input={"question": query})
             logger.info(report_res)
 
-        research_report = await db.research_reports.insert_one({
-            "query": query,
-            "user_id": ObjectId(user["user_id"]),
-            "research_report": report_res,
-            "type": query_type,
-            "created_at": datetime.now(),
-            "updated_at": datetime.now()
-        })
+        research_report = await db.research_reports.insert_one(
+            {
+                "query": query,
+                "user_id": ObjectId(user["user_id"]),
+                "research_report": report_res,
+                "type": query_type,
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
+            }
+        )
 
-        return ResearchReportOut.model_validate({
-            "id": str(research_report.inserted_id),
-            "type": query_type,
-            "query": query,
-            "report": report_res,
-            "user_id": str(user["user_id"]),
-        })
+        return ResearchReportOut.model_validate(
+            {
+                "id": str(research_report.inserted_id),
+                "type": query_type,
+                "query": query,
+                "report": report_res,
+                "user_id": str(user["user_id"]),
+            }
+        )
     except Exception as e:
         logger.error(e)
         raise e
@@ -54,8 +66,7 @@ async def create_report(report: ResearchRequest, user: dict[str, Any]):
 
 async def get_all_reports(user: dict[str, Any]):
     try:
-        cursor = db.research_reports.find(
-            {"user_id": ObjectId(user["user_id"])})
+        cursor = db.research_reports.find({"user_id": ObjectId(user["user_id"])})
         reports = await cursor.to_list(length=None)
         logger.info(f"Retrieved {reports} reports for user {user['user_id']}")
         return [
@@ -65,7 +76,7 @@ async def get_all_reports(user: dict[str, Any]):
                 "query": report["query"],
                 "report": report["research_report"],
                 "created_at": report["created_at"],
-                "updated_at": report["updated_at"]
+                "updated_at": report["updated_at"],
             }
             for report in reports
         ]
@@ -84,7 +95,7 @@ async def get_report(report_id: str):
             "report": report["research_report"],
             "user_id": str(report["user_id"]),
             "created_at": report["created_at"],
-            "updated_at": report["updated_at"]
+            "updated_at": report["updated_at"],
         }
     except Exception as e:
         logger.error(f"Error retrieving report: {e}")
@@ -103,7 +114,7 @@ async def update_report(report_id: str, report: ResearchReportUpdate):
     try:
         await db.research_reports.update_one(
             {"_id": ObjectId(report_id)},
-            {"$set": {**report.model_dump(), "updated_at": datetime.now()}}
+            {"$set": {**report.model_dump(), "updated_at": datetime.now()}},
         )
     except Exception as e:
         logger.error(f"Error updating report: {e}")

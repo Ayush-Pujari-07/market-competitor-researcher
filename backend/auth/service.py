@@ -33,8 +33,7 @@ async def create_user(user_data: AuthUser) -> Dict[str, Any]:
         return created_user
     except Exception as e:
         logger.error(f"Error creating user: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail="Internal Server Error") from e
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
 
 
 async def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
@@ -47,7 +46,9 @@ async def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
     return await db["users"].find_one({"email": email.lower()})
 
 
-async def create_refresh_token(user_id: str, refresh_token: Optional[str] = None) -> str:
+async def create_refresh_token(
+    user_id: str, refresh_token: Optional[str] = None
+) -> str:
     if not refresh_token:
         refresh_token = utils.generate_random_alphanum(64)
 
@@ -69,8 +70,7 @@ async def expire_refresh_token(refresh_token_uuid: str) -> None:
         raise ValueError("Invalid refresh_token_uuid")
 
     await db["refresh_tokens"].update_one(
-        {"_id": ObjectId(refresh_token_uuid)},
-        {"$set": {"expires_at": datetime.now()}}
+        {"_id": ObjectId(refresh_token_uuid)}, {"$set": {"expires_at": datetime.now()}}
     )
 
 
@@ -86,8 +86,7 @@ async def authenticate_user(auth_data: AuthUser) -> Dict[str, Any]:
         raise e
     except Exception as e:
         logger.error(f"Error authenticating user: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail="Internal Server Error") from e
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
 
 
 async def upload_file(file: UploadFile) -> Optional[list]:
@@ -110,4 +109,5 @@ async def upload_file(file: UploadFile) -> Optional[list]:
     except Exception as e:
         logger.error(f"Error uploading file: {e}")
         raise HTTPException(
-            status_code=500, detail="An error occurred while uploading the file.") from e
+            status_code=500, detail="An error occurred while uploading the file."
+        ) from e

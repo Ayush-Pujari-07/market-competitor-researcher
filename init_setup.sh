@@ -6,5 +6,5 @@ source activate ./venv
 echo [$(date)]: "Install UV for python"
 pip install uv
 echo [$(date)]: "installing dev requirements with latest version"
-uv pip install -r ./requirements/requirements.txt
+uv pip install -r requirements.txt
 echo [$(date)]: "END"

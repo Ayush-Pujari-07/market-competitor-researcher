@@ -20,8 +20,7 @@ def fetch_reports(headers):
 
 
 def create_report(report_request, headers):
-    response = requests.post(
-        CREATE_REPORT_URL, json=report_request, headers=headers)
+    response = requests.post(CREATE_REPORT_URL, json=report_request, headers=headers)
     response.raise_for_status()
     return response.json()
 
@@ -29,7 +28,7 @@ def create_report(report_request, headers):
 def research_report():
     st.title("Your Research Reports")
 
-    if 'refresh_token' not in st.session_state:
+    if "refresh_token" not in st.session_state:
         st.error("Please log in to access the chat page.")
         return
 
@@ -38,22 +37,22 @@ def research_report():
 
     try:
         reports = fetch_reports(headers)
-        report_titles = [report["query"]
-                         for report in reports] if reports else []
+        report_titles = [report["query"] for report in reports] if reports else []
 
-        selected_report = st.selectbox("Select a Research Report", [
-                                       ""] + report_titles, key="report_select")
+        selected_report = st.selectbox(
+            "Select a Research Report", [""] + report_titles, key="report_select"
+        )
 
         if selected_report:
             report_details = next(
-                report for report in reports if report["query"] == selected_report)
-            st.write(report_details['report'])
+                report for report in reports if report["query"] == selected_report
+            )
+            st.write(report_details["report"])
         else:
             st.title("Start New Research Report")
             industry = st.text_input("Enter the industry")
             company = st.text_input("Enter the company")
-            competitors = st.text_area(
-                "Enter competitors (comma-separated)").split(',')
+            competitors = st.text_area("Enter competitors (comma-separated)").split(",")
             market_research = st.checkbox("Market Research")
             competitor_research = st.checkbox("Competitor Research")
 
@@ -63,10 +62,10 @@ def research_report():
                     "company": company,
                     "competitors": competitors,
                     "market_research": market_research,
-                    "competitor_research": competitor_research
+                    "competitor_research": competitor_research,
                 }
                 created_report = create_report(new_report, headers)
-                st.write(created_report['report']['report'])
+                st.write(created_report["report"]["report"])
                 st.success("Report created successfully!")
 
     except requests.RequestException as e:
