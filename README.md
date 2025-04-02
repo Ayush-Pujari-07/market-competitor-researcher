@@ -14,9 +14,10 @@ An AI-powered tool that generates comprehensive market research and competitor a
 
 - Python 3.11 or higher
 - MongoDB instance
-- OpenAI API key
-- EXA API key
+- OpenAI API key (for GPT-4 and embeddings)
+- EXA API key (for web search capabilities)
 - Redis (for caching)
+- Docker and Docker Compose (for running services)
 
 ## Environment Setup
 
@@ -27,38 +28,70 @@ cp .env.example .env
 
 Update the `.env` file with your credentials:
 ```
+# JWT Settings
 JWT_ALGORITHM="HS256"
 JWT_EXPIRATION=210000
 JWT_SECRET="your-secret-key"
+
+# API Keys
 OPENAI_API_KEY="your-openai-key"
 EXA_API_KEY="your-exa-key"
+
+# Database
 MONGODB_URI="your-mongodb-uri"
+
+# Server Settings
+SITE_DOMAIN=127.0.0.1
+SECURE_COOKIES=false
+ENVIRONMENT=TESTING
+
+# CORS Settings
+CORS_HEADERS=["*"]
+CORS_ORIGINS=["http://localhost:3000"]
+
+# Redis Configuration
+REDIS_PORT=6379
+REDIS_HOST="localhost"
+
+# Chroma Settings
+CHROMA_PORT=8000
+CHROMA_HOST="localhost"
 ```
 
-3. Set up virtual environment:
+2. Set up virtual environment:
 ```bash
 # Option 1: Using venv
 python3.11 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Option 2: Using init_setup.sh
+# Option 2: Using init_setup.sh (Linux/Mac)
 bash init_setup.sh
 ```
 
-4. Install dependencies:
+3. Install dependencies:
 ```bash
-# Install UV package manager
-pip install uv
-
-# Install project dependencies
-uv pip install -r requirements/requirements.txt
+# Install all requirements
+pip install -r requirements.txt
 ```
+
+## Development Setup
+
+1. Install pre-commit hooks:
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+2. The project uses the following code quality tools:
+- Ruff for linting
+- Black for code formatting
+- Pre-commit hooks for automated checks
 
 ## Running the Application
 
 1. Start the services:
 ```bash
-# Start Redis using Docker
+# Start Redis and other services using Docker
 docker-compose up -d
 
 # Start both frontend and backend
@@ -92,21 +125,22 @@ market-competitor-researcher/
 - Market size and growth
 - Key trends and drivers
 - Competitive landscape
+- Web-based data gathering using EXA
+- AI-powered report generation using GPT-4
 
 ### Competitor Analysis
 - Competitor profiling
 - Strength/weakness analysis
 - Market positioning
 - Competitive advantages
+- Real-time data collection
+- AI-driven insights
 
-## Development
+## Logging
 
-For development work:
-```bash
-# Install development dependencies
-uv pip install -r requirements/requirements_dev.txt
-```
-
+The application uses two logging configurations:
+- `logging.ini` for development
+- `logging_production.ini` for production with JSON formatting
 
 ## License
 
